@@ -31,7 +31,8 @@ int tetrahedralization(GEO::Mesh&       sf_mesh,
                        int              boolean_op,
                        bool             skip_simplify)
 {
-    if (!sf_mesh.facets.are_simplices()) {
+    if (!sf_mesh.facets.are_simplices()) 
+    {
         GEO::mesh_repair(
           sf_mesh, GEO::MeshRepairMode(GEO::MESH_REPAIR_TRIANGULATE | GEO::MESH_REPAIR_QUIET));
     }
@@ -39,16 +40,19 @@ int tetrahedralization(GEO::Mesh&       sf_mesh,
 
     std::vector<Vector3>  input_vertices(sf_mesh.vertices.nb());
     std::vector<Vector3i> input_faces(sf_mesh.facets.nb());
-    for (size_t i = 0; i < input_vertices.size(); i++) {
+    for (size_t i = 0; i < input_vertices.size(); i++) 
+    {
         input_vertices[i] << (sf_mesh.vertices.point(i))[0], (sf_mesh.vertices.point(i))[1],
           (sf_mesh.vertices.point(i))[2];
     }
-    for (size_t i = 0; i < input_faces.size(); i++) {
+    for (size_t i = 0; i < input_faces.size(); i++) 
+    {
         input_faces[i] << sf_mesh.facets.vertex(i, 0), sf_mesh.facets.vertex(i, 1),
           sf_mesh.facets.vertex(i, 2);
     }
 
-    if (input_vertices.empty() || input_faces.empty()) {
+    if (input_vertices.empty() || input_faces.empty()) 
+    {
         return EXIT_FAILURE;
     }
 
@@ -58,7 +62,8 @@ int tetrahedralization(GEO::Mesh&       sf_mesh,
 #endif
     std::vector<int> input_tags(input_faces.size(), 0);
 
-    if (!params.init(tree.get_sf_diag())) {
+    if (!params.init(tree.get_sf_diag())) 
+    {
         return EXIT_FAILURE;
     }
 
@@ -83,7 +88,8 @@ int tetrahedralization(GEO::Mesh&       sf_mesh,
                    input_faces.size(),
                    -1,
                    -1);
-    if (mesh.params.log_level <= 1) {
+    if (mesh.params.log_level <= 1) 
+    {
         output_component(input_vertices, input_faces, input_tags);
     }
 
@@ -143,25 +149,39 @@ int tetrahedralization(GEO::Mesh&       sf_mesh,
     /////////////////////////////////
 
     timer.start();
-    if (boolean_op < 0) {
+    if (boolean_op < 0) 
+    {
 //        filter_outside(mesh);
-        if (params.smooth_open_boundary) {
+        if (params.smooth_open_boundary) 
+        {
             smooth_open_boundary(mesh, tree);
-            for (auto &t: mesh.tets) {
+            for (auto &t: mesh.tets) 
+            {
                 if (t.is_outside)
                     t.is_removed = true;
             }
-        } else {
-            if(!params.disable_filtering) {
-                if(params.use_floodfill) {
+        }
+        else
+        {
+            if(!params.disable_filtering)
+            {
+                if(params.use_floodfill) 
+                {
                     filter_outside_floodfill(mesh);
-                } else if(params.use_input_for_wn){
+                } 
+                else if(params.use_input_for_wn)
+                {
                     filter_outside(mesh, input_vertices, input_faces);
-                } else
-                    filter_outside(mesh);
+                } 
+                else
+                {
+                  filter_outside(mesh);
+                }
             }
         }
-    } else {
+    }
+    else
+    {
         boolean_operation(mesh, boolean_op);
     }
     stats().record(StateInfo::wn_id,
@@ -178,14 +198,17 @@ int tetrahedralization(GEO::Mesh&       sf_mesh,
 
     MeshIO::extract_volume_mesh(mesh, V, T, false);
 
-    if (!params.log_path.empty()) {
+    if (!params.log_path.empty()) 
+    {
         std::ofstream fout(params.log_path + "_" + params.postfix + ".csv");
-        if (fout) {
+        if (fout) 
+        {
             fout << stats();
         }
     }
 
-    if (!params.envelope_log.empty()) {
+    if (!params.envelope_log.empty()) 
+    {
         std::ofstream fout(params.envelope_log);
         fout << envelope_log_csv;
     }
