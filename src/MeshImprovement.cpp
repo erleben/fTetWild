@@ -322,13 +322,16 @@ void floatTetWild::cleanup_empty_slots(Mesh &mesh, double percentage) {
     cout<<mesh.tets.size()<<endl;
 }
 
-void floatTetWild::operation(Mesh &mesh, AABBWrapper& tree, const std::array<int, 4> &ops){
+
+void floatTetWild::operation(Mesh &mesh, AABBWrapper& tree, const std::array<int, 4> &ops)
+{
     igl::Timer igl_timer;
     int v_num, t_num;
     double max_energy, avg_energy;
     double time;
 
-    for (int i = 0; i < ops[0]; i++) {
+    for (int i = 0; i < ops[0]; i++) 
+    {
         igl_timer.start();
         cout << "edge splitting..." << endl;
         untangle(mesh);
@@ -347,7 +350,8 @@ void floatTetWild::operation(Mesh &mesh, AABBWrapper& tree, const std::array<int
         output_info(mesh, tree);
     }
 
-    for (int i = 0; i < ops[1]; i++) {
+    for (int i = 0; i < ops[1]; i++) 
+    {
         igl_timer.start();
         cout << "edge collapsing..." << endl;
         untangle(mesh);
@@ -366,7 +370,8 @@ void floatTetWild::operation(Mesh &mesh, AABBWrapper& tree, const std::array<int
         output_info(mesh, tree);
     }
 
-    for (int i = 0; i < ops[2]; i++) {
+    for (int i = 0; i < ops[2]; i++) 
+    {
         igl_timer.start();
         cout << "edge swapping..." << endl;
         untangle(mesh);
@@ -385,7 +390,8 @@ void floatTetWild::operation(Mesh &mesh, AABBWrapper& tree, const std::array<int
         output_info(mesh, tree);
     }
 
-    for (int i = 0; i < ops[3]; i++) {
+    for (int i = 0; i < ops[3]; i++) 
+    {
         igl_timer.start();
         cout << "vertex smoothing..." << endl;
         vertex_smoothing(mesh, tree);
@@ -404,8 +410,16 @@ void floatTetWild::operation(Mesh &mesh, AABBWrapper& tree, const std::array<int
     }
 }
 
-void floatTetWild::operation(const std::vector<Vector3> &input_vertices, const std::vector<Vector3i> &input_faces, const std::vector<int> &input_tags, std::vector<bool> &is_face_inserted,
-        Mesh &mesh, AABBWrapper& tree, const std::array<int, 5> &ops) {
+void floatTetWild::operation(
+                               const std::vector<Vector3> &input_vertices
+                             , const std::vector<Vector3i> &input_faces
+                             , const std::vector<int> &input_tags
+                             , std::vector<bool> &is_face_inserted
+                             , Mesh &mesh
+                             , AABBWrapper& tree
+                             , const std::array<int, 5> &ops
+                             )
+{
     operation(mesh, tree, {{ops[0], ops[1], ops[2], ops[3]}});
 
     igl::Timer igl_timer;
@@ -487,11 +501,12 @@ void floatTetWild::operation(const std::vector<Vector3> &input_vertices, const s
 //        stats().record(StateInfo::smoothing_id, time, v_num, t_num, max_energy, avg_energy);
 //        output_info(mesh, tree);
 //    }
-
-    if (!mesh.is_input_all_inserted) {
+    if (!mesh.is_input_all_inserted) 
+    {
         pausee();
 
-        for (int i = 0; i < ops[4]; i++) {
+        for (int i = 0; i < ops[4]; i++) 
+        {
 //            //reset boundary points
 //            for (auto &v: mesh.tet_vertices) {
 //                if (v.is_removed)
@@ -509,27 +524,34 @@ void floatTetWild::operation(const std::vector<Vector3> &input_vertices, const s
                            std::count(is_face_inserted.begin(), is_face_inserted.end(),
                                       false));
 
-            if(mesh.is_input_all_inserted && mesh.is_closed){
-                for (int v_id = 0; v_id < mesh.tet_vertices.size(); v_id++) {
+            if(mesh.is_input_all_inserted && mesh.is_closed)
+            {
+                for (int v_id = 0; v_id < mesh.tet_vertices.size(); v_id++) 
+                {
                     if (mesh.tet_vertices[v_id].is_removed)
                         continue;
                     mesh.tet_vertices[v_id].is_on_boundary = false;
                     mesh.tet_vertices[v_id].is_on_cut = false;
                 }
-            } else {
-                for (int v_id = 0; v_id < mesh.tet_vertices.size(); v_id++) {
+            }
+            else
+            {
+                for (int v_id = 0; v_id < mesh.tet_vertices.size(); v_id++) 
+                {
                     if (mesh.tet_vertices[v_id].is_removed)
                         continue;
                     if (!mesh.tet_vertices[v_id].is_on_boundary)
                         continue;
 #ifdef NEW_ENVELOPE
-                    if (tree.is_out_tmp_b_envelope_exact(mesh.tet_vertices[v_id].pos)) {
+                    if (tree.is_out_tmp_b_envelope_exact(mesh.tet_vertices[v_id].pos)) 
+                    {
                         mesh.tet_vertices[v_id].is_on_boundary = false;
                         mesh.tet_vertices[v_id].is_on_cut = false;
                     }
 #else
                     GEO::index_t prev_facet;
-                    if (tree.is_out_tmp_b_envelope(mesh.tet_vertices[v_id].pos, mesh.params.eps_2, prev_facet)) {
+                    if (tree.is_out_tmp_b_envelope(mesh.tet_vertices[v_id].pos, mesh.params.eps_2, prev_facet)) 
+                    {
                         mesh.tet_vertices[v_id].is_on_boundary = false;
                         mesh.tet_vertices[v_id].is_on_cut = false;
                     }
@@ -612,10 +634,11 @@ void floatTetWild::operation(const std::vector<Vector3> &input_vertices, const s
 }
 
 #include <geogram/points/kd_tree.h>
-bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
+bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) 
+{
 //    return false;
 
-    cout << "updating sclaing field ..." << endl;
+    cout << "updating scaling field ..." << endl;
     bool is_hit_min_edge_length = false;
 
     Scalar radius0 = mesh.params.ideal_edge_length * 1.8;//increasing the radius would increase the #v in output
@@ -643,13 +666,15 @@ bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
 
     const int N = -int(std::log2(min_refine_scale) - 1);
     std::vector<std::vector<int>> v_ids(N, std::vector<int>());
-    for (int i = 0; i < mesh.tet_vertices.size(); i++) {
+    for (int i = 0; i < mesh.tet_vertices.size(); i++) 
+    {
         auto &v = mesh.tet_vertices[i];
         if (v.is_removed)
             continue;
 
         bool is_refine = false;
-        for (int t_id: v.conn_tets) {
+        for (int t_id: v.conn_tets) 
+        {
             if (mesh.tets[t_id].quality > filter_energy)
                 is_refine = true;
         }
@@ -662,7 +687,8 @@ bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
         v_ids[n].push_back(i);
     }
 
-    for (int n = 0; n < N; n++) {
+    for (int n = 0; n < N; n++) 
+    {
         if (v_ids[n].size() == 0)
             continue;
 
@@ -673,7 +699,8 @@ bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
 
         std::vector<double> pts;//geogram needs double []
         pts.reserve(v_ids[n].size() * 3);
-        for (int i = 0; i < v_ids[n].size(); i++) {
+        for (int i = 0; i < v_ids[n].size(); i++) 
+        {
             pts.push_back(mesh.tet_vertices[v_ids[n][i]].pos[0]);
             pts.push_back(mesh.tet_vertices[v_ids[n][i]].pos[1]);
             pts.push_back(mesh.tet_vertices[v_ids[n][i]].pos[2]);
@@ -686,12 +713,15 @@ bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
         GEO::NearestNeighborSearch_var nnsearch = GEO::NearestNeighborSearch::create(3, "BNN");
         nnsearch->set_points(int(v_ids[n].size()), pts.data());
 
-        while (!v_queue.empty()) {
+        while (!v_queue.empty()) 
+        {
             int v_id = v_queue.front();
             v_queue.pop();
 
-            for (int t_id:mesh.tet_vertices[v_id].conn_tets) {
-                for (int j = 0; j < 4; j++) {
+            for (int t_id:mesh.tet_vertices[v_id].conn_tets) 
+            {
+                for (int j = 0; j < 4; j++) 
+                {
                     if (is_visited.find(mesh.tets[t_id][j]) != is_visited.end())
                         continue;
                     GEO::index_t _;
@@ -702,7 +732,8 @@ bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
                     nnsearch->get_nearest_neighbors(1, p, &_, &sq_dist);
                     Scalar dis = sqrt(sq_dist);
 
-                    if (dis < radius) {
+                    if (dis < radius) 
+                    {
                         v_queue.push(mesh.tets[t_id][j]);
                         Scalar new_ss = (dis / radius) * (1 - refine_scale) + refine_scale;
                         if (new_ss < scale_multipliers[mesh.tets[t_id][j]])
@@ -715,7 +746,8 @@ bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
     }
 
     // update scalars
-    for (int i=0;i< mesh.tet_vertices.size();i++) {
+    for (int i=0;i< mesh.tet_vertices.size();i++) 
+    {
         auto& v = mesh.tet_vertices[i];
         if (v.is_removed)
             continue;
@@ -724,10 +756,12 @@ bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
             v.sizing_scalar = 1;
 //        if (new_scale > mesh.tri_vertices[i].max_scale)
 //            mesh.tri_vertices[i].scale = mesh.tri_vertices[i].max_scale;
-        else if (new_scale < min_refine_scale) {
+        else if (new_scale < min_refine_scale) 
+        {
             is_hit_min_edge_length = true;
             v.sizing_scalar = min_refine_scale;
-        } else
+        } 
+        else
             v.sizing_scalar = new_scale;
     }
 
@@ -735,7 +769,9 @@ bool floatTetWild::update_scaling_field(Mesh &mesh, Scalar max_energy) {
     return is_hit_min_edge_length;
 }
 
-void floatTetWild::output_info(Mesh& mesh, const AABBWrapper& tree) {
+
+void floatTetWild::output_info(Mesh& mesh, const AABBWrapper& tree) 
+{
     if(mesh.params.is_quiet)
         return;
 
@@ -1337,12 +1373,14 @@ void floatTetWild::apply_sizingfield(Mesh& mesh, AABBWrapper& tree) {
         return value;  // / mesh.params.ideal_edge_length;
     };
 
-    for (auto &p: tet_vertices) {
+    for (auto &p: tet_vertices) 
+    {
         if (p.is_removed)
             continue;
         p.sizing_scalar = 1; //reset
         double value = get_sizing_field_value(p.pos);
-        if (value > 0) {
+        if (value > 0) 
+        {
             p.sizing_scalar = value / mesh.params.ideal_edge_length;
         }
     }
