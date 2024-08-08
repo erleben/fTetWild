@@ -98,7 +98,8 @@ namespace floatTetWild {
         Scalar eps_2_simplification;
         Scalar dd_simplification;
 
-        bool init(Scalar bbox_diag_l) {
+      bool init(Scalar bbox_diag_l)
+      {
             if (stage > 5)
                 stage = 5;
 
