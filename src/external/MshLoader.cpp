@@ -12,7 +12,8 @@ using namespace PyMesh;
 MshLoader::MshLoader(const std::string& filename) {
     std::ifstream fin(filename.c_str(), std::ios::in | std::ios::binary);
 
-    if (!fin.is_open()) {
+    if (!fin.is_open()) 
+    {
         std::stringstream err_msg;
         err_msg << "failed to open file \"" << filename << "\"";
 //        return;
@@ -29,21 +30,25 @@ MshLoader::MshLoader(const std::string& filename) {
     m_binary = (type == 1);
 
     // Some sanity check.
-    if (m_data_size != 8) {
+    if (m_data_size != 8) 
+    {
         std::cerr << "Error: data size must be 8 bytes." << std::endl;
         throw NOT_IMPLEMENTED;
     }
-    if (sizeof(int) != 4) {
+    if (sizeof(int) != 4) 
+    {
         std::cerr << "Error: code must be compiled with int size 4 bytes." << std::endl;
         throw NOT_IMPLEMENTED;
     }
 
     // Read in extra info from binary header.
-    if (m_binary) {
+    if (m_binary) 
+    {
         int one;
         eat_white_space(fin);
         fin.read(reinterpret_cast<char*>(&one), sizeof(int));
-        if (one != 1) {
+        if (one != 1) 
+        {
             std::cerr << "Warning: binary msh file " << filename
                 << " is saved with different endianness than this machine."
                 << std::endl;
@@ -54,14 +59,21 @@ MshLoader::MshLoader(const std::string& filename) {
     fin >> buf;
     if (buf != "$EndMeshFormat") { throw NOT_IMPLEMENTED; }
 
-    while (!fin.eof()) {
+    while (!fin.eof()) 
+    {
         buf.clear();
         fin >> buf;
-        if (buf == "$Nodes") {
+        if (buf == "$Nodes") 
+        {
             parse_nodes(fin);
             fin >> buf;
-            if (buf != "$EndNodes") { throw INVALID_FORMAT; }
-        } else if (buf == "$Elements") {
+            if (buf != "$EndNodes") 
+            {
+              throw INVALID_FORMAT;
+            }
+        }
+        else if (buf == "$Elements")
+        {
             parse_elements(fin);
             fin >> buf;
             if (buf != "$EndElements") { throw INVALID_FORMAT; }
