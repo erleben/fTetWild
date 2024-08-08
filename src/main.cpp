@@ -294,8 +294,8 @@ int main(int argc, char** argv)
 
     if (params.output_path.empty())
         params.output_path = params.input_path;
-    if (params.log_path.empty())
-        params.log_path = params.output_path;
+  if (params.log_path.empty())
+    params.log_path = params.output_path;
 
     std::string output_mesh_name = params.output_path;
     if (params.output_path.size() > 3 &&
