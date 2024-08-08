@@ -24,10 +24,12 @@ std::shared_ptr<spdlog::logger> Logger::logger_;
 void Logger::init(bool use_cout, const spdlog::filename_t& filename, bool truncate)
 {
     std::vector<spdlog::sink_ptr> sinks;
-    if (use_cout) {
+    if (use_cout) 
+    {
         sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     }
-    if (!filename.empty()) {
+    if (!filename.empty()) 
+    {
         sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, truncate));
     }
 
